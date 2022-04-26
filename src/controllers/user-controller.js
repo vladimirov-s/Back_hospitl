@@ -2,7 +2,7 @@ const User = require('./../models/user-schema');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const { secret } = require('./../../config')
+const { secret } = require('./../../config');
 const HASH_ROUDS = 10;
 
 const generateAccessToken = (id) => {
@@ -11,7 +11,6 @@ const generateAccessToken = (id) => {
   }
   return jwt.sign(payload, secret, { expiresIn: "24h" });
 }
-
 
 class UserController {
   async registration(req, res) {
@@ -26,7 +25,7 @@ class UserController {
       const candidate = await User.findOne({ email: email });
 
       if (candidate) {
-        return res.status(400).json({ message: "Пользователь с таким именем уже существует" })
+        return res.status(400).json({ message: "Пользователь с таким именем уже существует" });
       }
 
       const hashPassword = bcrypt.hashSync(password, HASH_ROUDS);
@@ -39,7 +38,6 @@ class UserController {
       res.status(400).json({ data: "Registration error" })
     }
   }
-
 
   async login(req, res) {
     try {
@@ -59,10 +57,9 @@ class UserController {
 
     } catch (err) {
       console.log(e);
-      res.status(400).json({ data: "Login error" })
+      res.status(400).json({ data: "Login error" });
     }
   }
-
 
   async getUsers(req, res, next) {
     try {
@@ -73,6 +70,5 @@ class UserController {
     }
   }
 }
-
 
 module.exports = new UserController();
