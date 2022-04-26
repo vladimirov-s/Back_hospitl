@@ -9,11 +9,11 @@ router.post(
   [
     check(
       "email",
-      "Имя пользователя не может быть пустым"
+      "User name must be filled"
     ).notEmpty(),
     check(
       "password",
-      "Пароль должен быть не меньше 6 и не больше 10 символов"
+      "Password must be between 6 - 10 characters"
     ).isLength({ min: 6, max: 10 }),
   ],
   userController.registration
