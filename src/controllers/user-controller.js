@@ -25,7 +25,7 @@ class UserController {
 
       if (!errors.isEmpty()) {
         return res.status(400).json({
-          data: "Ащибка при регистрации",
+          data: "something went wrong",
           errors,
         });
       }
@@ -40,7 +40,7 @@ class UserController {
       if (candidate) {
         return res.status(400).json({
           message:
-            "Пользователь с таким именем уже существует",
+            "Error. such user already exist",
         });
       }
 
@@ -55,7 +55,7 @@ class UserController {
       await user.save();
 
       return res.json({
-        data: "Пользователь успешно зарегестрирован.",
+        data: "success",
       });
     } catch (err) {
       console.log(err);
@@ -74,7 +74,7 @@ class UserController {
 
       if (!user) {
         return res.status(400).json({
-          data: `Пользователь ${email} не найден`,
+          data: `user ${email} does not found`,
         });
       }
 
@@ -85,7 +85,7 @@ class UserController {
         );
       if (!validPassword) {
         return res.status(400).json({
-          data: `Введен не верный пароль`,
+          data: `incorrect password`,
         });
       }
       const token = generateAccessToken(
