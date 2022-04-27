@@ -1,12 +1,8 @@
 const User = require("./../models/user-schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const {
-  validationResult,
-} = require("express-validator");
-const {
-  secret,
-} = require("./../../config");
+const { validationResult } = require("express-validator");
+const { secret } = require("./../../config");
 const HASH_ROUDS = 10;
 
 const generateAccessToken = id => {
@@ -31,23 +27,17 @@ class UserController {
       }
 
       const { name, password } = req.body;
-      const candidate = await User.findOne(
-        {
-          name: name,
-        }
-      );
+      const candidate = await User.findOne({
+        name: name,
+      });
 
       if (candidate) {
         return res.status(400).json({
-          message:
-            "Error. such user already exist",
+          message: "Error. such user already exist",
         });
       }
 
-      const hashPassword = bcrypt.hashSync(
-        password,
-        HASH_ROUDS
-      );
+      const hashPassword = bcrypt.hashSync(password, HASH_ROUDS);
       const user = new User({
         name: name,
         password: hashPassword,
@@ -78,32 +68,27 @@ class UserController {
         });
       }
 
-      const validPassword =
-        bcrypt.compareSync(
-          password,
-          user.password
-        );
+      const validPassword = bcrypt.compareSync(
+        password,
+        user.password
+      );
       if (!validPassword) {
         return res.status(400).json({
           data: `incorrect password`,
         });
       }
-      const token = generateAccessToken(
-        user._id
-      );
+      const token = generateAccessToken(user._id);
       return res.json({ token });
     } catch (err) {
       console.log(e);
-      res
-        .status(400)
-        .json({ data: "Login error" });
+      res.status(400).json({ data: "Login error" });
     }
   }
 
-  async getUsers(req, res, next) {
+  async getAppointments(req, res, next) {
     try {
-      const users = await User.find();
-      res.json(users);
+      const appointments = await User.find();
+      res.json(appointments);
     } catch (err) {
       console.log(err);
     }
