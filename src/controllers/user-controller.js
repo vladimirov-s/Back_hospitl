@@ -30,10 +30,10 @@ class UserController {
         });
       }
 
-      const { email, password } = req.body;
+      const { name, password } = req.body;
       const candidate = await User.findOne(
         {
-          email: email,
+          name: name,
         }
       );
 
@@ -49,7 +49,7 @@ class UserController {
         HASH_ROUDS
       );
       const user = new User({
-        email: email,
+        name: name,
         password: hashPassword,
       });
       await user.save();
@@ -67,14 +67,14 @@ class UserController {
 
   async login(req, res) {
     try {
-      const { email, password } = req.body;
+      const { name, password } = req.body;
       const user = await User.findOne({
-        email,
+        name,
       });
 
       if (!user) {
         return res.status(400).json({
-          data: `user ${email} does not found`,
+          data: `user ${name} does not found`,
         });
       }
 

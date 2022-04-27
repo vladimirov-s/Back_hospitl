@@ -1,5 +1,5 @@
 const User = new Schema({
-  email: {
+  name: {
     type: String,
     unique: true,
     required: true,

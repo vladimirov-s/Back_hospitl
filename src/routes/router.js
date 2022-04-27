@@ -8,7 +8,7 @@ router.post(
   "/registration",
   [
     check(
-      "email",
+      "name",
       "User name must be filled"
     ).notEmpty(),
     check(
