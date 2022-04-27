@@ -1,8 +1,8 @@
-const User = require("./../models/user-schema");
+const User = require("../models/user-schema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
-const { secret } = require("./../../config");
+const { secret } = require("../../config");
 const HASH_ROUDS = 10;
 
 const generateAccessToken = id => {
@@ -82,15 +82,6 @@ class UserController {
     } catch (err) {
       console.log(e);
       res.status(400).json({ data: "Login error" });
-    }
-  }
-
-  async getAppointments(req, res, next) {
-    try {
-      const appointments = await User.find();
-      res.json(appointments);
-    } catch (err) {
-      console.log(err);
     }
   }
 }
