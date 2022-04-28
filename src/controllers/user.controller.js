@@ -1,15 +1,15 @@
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
-const { secret } = require("../../config");
+const User = require("../models/user");
 const HASH_ROUDS = 10;
 
 const generateAccessToken = id => {
   const payload = {
     id,
   };
-  return jwt.sign(payload, secret, {
+  return jwt.sign(payload, process.env.SECRET, {
     expiresIn: "24h",
   });
 };
@@ -48,7 +48,6 @@ class UserController {
         data: "success",
       });
     } catch (err) {
-      console.log(err);
       res.status(400).json({
         data: "Registration error",
       });
@@ -78,9 +77,8 @@ class UserController {
         });
       }
       const token = generateAccessToken(user._id);
-      return res.json({ token });
+      return res.json({ data: token });
     } catch (err) {
-      console.log(e);
       res.status(400).json({ data: "Login error" });
     }
   }

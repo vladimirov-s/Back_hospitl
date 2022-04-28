@@ -1,3 +1,7 @@
-module.exports = {
-  secret: 'mkgflklngnklhymklnkngfdknglngfdbngfjklbnlfdnbgkldngfklbngfkldbnhgfklngfklnklgfdnbklgfdnb kldgfn klbgnfb klgfklnbmklgfdsnbkdfjnbgkldgfnbklgfnbgfklbjngfklbnksbndsklnbhgklgfdsnbklgfsdnbkgfdnbklnbksnbs'
-} 
+// require("dotenv").config();
+//
+// const config = process.env.map(elem => {
+//   return elem;
+// });
+//
+// module.exports = config;
