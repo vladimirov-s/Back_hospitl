@@ -1,18 +1,5 @@
-const bcrypt = require("bcrypt");
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
+const userService = require("./../service/auth-service");
 const { validationResult } = require("express-validator");
-const User = require("../models/user");
-const HASH_ROUDS = 10;
-
-const generateAccessToken = id => {
-  const payload = {
-    id,
-  };
-  return jwt.sign(payload, process.env.SECRET, {
-    expiresIn: "24h",
-  });
-};
 
 class UserController {
   async registration(req, res) {
@@ -27,27 +14,17 @@ class UserController {
       }
 
       const { name, password } = req.body;
-      const candidate = await User.findOne({
-        name: name,
+      const createNewUser = await userService.registration(
+        name,
+        password
+      );
+      res.cookie("refreshToken", createNewUser.refreshToken, {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
       });
-
-      if (candidate) {
-        return res.status(400).json({
-          message: "Error. such user already exist",
-        });
-      }
-
-      const hashPassword = bcrypt.hashSync(password, HASH_ROUDS);
-      const user = new User({
-        name: name,
-        password: hashPassword,
-      });
-      await user.save();
-
-      return res.json({
-        data: "success",
-      });
+      return res.json(createNewUser);
     } catch (err) {
+      console.log(err);
       res.status(400).json({
         data: "Registration error",
       });
@@ -57,27 +34,8 @@ class UserController {
   async login(req, res) {
     try {
       const { name, password } = req.body;
-      const user = await User.findOne({
-        name,
-      });
-
-      if (!user) {
-        return res.status(400).json({
-          data: `user ${name} does not found`,
-        });
-      }
-
-      const validPassword = bcrypt.compareSync(
-        password,
-        user.password
-      );
-      if (!validPassword) {
-        return res.status(400).json({
-          data: `incorrect password`,
-        });
-      }
-      const token = generateAccessToken(user._id);
-      return res.json({ data: token });
+      const login = await userService.login(name, password);
+      return res.json(login);
     } catch (err) {
       res.status(400).json({ data: "Login error" });
     }
