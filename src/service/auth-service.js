@@ -31,15 +31,10 @@ class UserService {
     });
 
     if (!user) {
-      throw ApiError.BadRequestError(
-        `User ${name} does not find`
-      );
+      throw ApiError.BadRequestError(`User ${name} does not find`);
     }
 
-    const validPassword = bcrypt.compareSync(
-      password,
-      user.password
-    );
+    const validPassword = bcrypt.compareSync(password, user.password);
     if (!validPassword) {
       throw ApiError.BadRequestError(`Password is wrong`);
     }
@@ -47,6 +42,11 @@ class UserService {
     const token = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, token.refreshToken);
     return { token: token, user: userDto };
+  }
+
+  async logout(refreshToken) {
+    const token = await tokenService.removetoken(refreshToken);
+    return token;
   }
 }
 
