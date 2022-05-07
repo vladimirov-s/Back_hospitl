@@ -18,13 +18,16 @@ class UserController {
         name,
         password
       );
-      res.cookie("refreshToken", createNewUser.refreshToken, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-      });
+      res.cookie(
+        "refreshToken",
+        createNewUser.token.refreshToken,
+        {
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        }
+      );
       return res.json(createNewUser);
     } catch (err) {
-      console.log(err);
       res.status(400).json({
         data: "Registration error",
       });
@@ -35,24 +38,28 @@ class UserController {
     try {
       const { name, password } = req.body;
       const login = await userService.login(name, password);
-      res.cookie("refreshToken", login.refreshToken, {
+      res.cookie("refreshToken", login.token.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
       return res.json(login);
     } catch (err) {
-      console.log(err);
       res.status(400).json({ data: "Login error" });
     }
   }
 
   async logout(req, res) {
+    console.log(req.headers);
     try {
       const { refreshToken } = req.cookies;
       const token = await userService.logout(refreshToken);
       res.clearCookie("refreshToken");
       return res.json(token);
-    } catch (e) {}
+    } catch (e) {
+      res.status(400).json({
+        data: "something went wrong",
+      });
+    }
   }
 }
 

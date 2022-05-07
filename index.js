@@ -20,7 +20,7 @@ const start = async () => {
     });
     app.listen(port, () => console.log(`listen port-${port}`));
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };
 
