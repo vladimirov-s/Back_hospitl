@@ -6,16 +6,12 @@ class TokenService {
     const accessToken = jwt.sign(
       payload,
       `${process.env.JWT_ACCESS_SECRET}`,
-      {
-        expiresIn: "6h",
-      }
+      { expiresIn: "6h" }
     );
     const refreshToken = jwt.sign(
       payload,
       `${process.env.JWT_REFRESH_SECRET}`,
-      {
-        expiresIn: "30d",
-      }
+      { expiresIn: "30d" }
     );
     return {
       accessToken,
@@ -34,6 +30,30 @@ class TokenService {
       refreshToken: refreshToken,
     });
     return token;
+  }
+
+  validateRefreshToken(refreshToken) {
+    try {
+      const verifiedToken = jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET
+      );
+      return verifiedToken;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async findToken(refreshToken) {
+    const tokenDate = await tokenModel.findOne({ refreshToken });
+    return tokenDate;
+  }
+
+  async removetoken(refreshToken) {
+    const tokenData = await tokenModel.deleteOne({
+      refreshToken,
+    });
+    return tokenData;
   }
 }
 

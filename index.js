@@ -7,9 +7,15 @@ const router = require("./src/routes/auth");
 const app = express();
 const port = process.env.PORT || 5000;
 
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use("/api", router);
 
 const start = async () => {
@@ -20,7 +26,7 @@ const start = async () => {
     });
     app.listen(port, () => console.log(`listen port-${port}`));
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };
 
