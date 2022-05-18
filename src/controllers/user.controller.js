@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const userService = require("./../service/auth-service");
+const authService = require("./../service/auth-service");
 const appoinService = require("./../service/appoint-sevice");
 const { validationResult } = require("express-validator");
 
@@ -10,105 +10,110 @@ class UserController {
 
       if (!errors.isEmpty()) {
         return res.status(400).json({
-          data: "something went wrong",
-          errors,
+          message: "ваш запрос не валиден",
+          value: errors.errors[0].value,
+          inFields: errors.errors[0].param,
         });
       }
 
       const { name, password } = req.body;
-      const createNewUser = await userService.registration(name, password);
+      const createNewUser = await authService.registration(name, password);
       res.cookie("refreshToken", createNewUser.token.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
       return res.json(createNewUser);
     } catch (err) {
-      res.status(400).json({
-        data: "Registration error",
-      });
+      console.error(err);
+      res.status(400).json({ data: "Такой пользователь уже существует" });
     }
   }
 
   async login(req, res) {
     try {
       const { name, password } = req.body;
-      const login = await userService.login(name, password);
+      const login = await authService.login(name, password);
       res.cookie("refreshToken", login.token.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
       return res.json(login);
     } catch (err) {
-      res.status(400).json({ data: "Login error" });
+      res.status(400).json({ data: "something went wrong" });
     }
   }
 
   async logout(req, res) {
     try {
       const { refreshToken } = req.cookies;
-      const token = await userService.logout(refreshToken);
+      const token = await authService.logout(refreshToken);
       res.clearCookie("refreshToken");
       return res.json(token);
-    } catch (e) {
-      res.status(400).json({
-        data: "something went wrong",
-      });
+    } catch (err) {
+      res.status(401).json({ data: "some error occured" });
+      console.error(err);
     }
   }
 
   async refresh(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      const userData = await userService.refresh(refreshToken);
+      const userData = await authService.refresh(refreshToken);
 
       res.cookie("refreshToken", userData.token.refreshToken, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
       return res.json(userData);
-    } catch (e) {
-      next(e);
+    } catch (err) {
+      res.status(401).json({ data: "some error occured" });
+      console.error(err);
     }
   }
 
-  async createAppointment(req, res) {
-    const { id, customer, doctor, complaint, date } = req.body;
+  // Appointment routes
 
+  async createAppointment(req, res) {
     try {
+      const { customer, doctor, complaint, date } = req.body;
+      const { refreshToken } = req.cookies;
+
       const appoint = await appoinService.createappoint(
-        id,
+        refreshToken,
         customer,
         doctor,
         date,
         complaint
       );
-      const allAppUser = await appoinService.getAppointments(id);
-      return res.json(allAppUser);
-    } catch {
-      (err) => console.error(err);
+      const allAppUser = await appoinService.getAppointments(refreshToken);
+      return res.json({ data: allAppUser });
+    } catch (err) {
+      res.status(401).json({ data: "some error occured" });
+      console.error(err);
     }
   }
 
   async getAppoints(req, res) {
-    const { ownerId } = req.query;
-    const owner = await User.findOne({ _id: ownerId });
-    if (!owner) {
-      res.status(404).json({ data: "Хуйня какая то произошла" });
-    } else {
-      const appointments = await appoinService.getAppointments(ownerId);
-      res.json(appointments);
+    try {
+      const { refreshToken } = req.cookies;
+      const appointments = await appoinService.getAppointments(refreshToken);
+      res.json({ data: appointments });
+    } catch (err) {
+      res.status(401).json({ data: "some error occured" });
+      console.error(err);
     }
   }
-
   async deleteAppoint(req, res) {
-    const { ownerId, appointId } = req.body;
     try {
-      const deletResult = await appoinService.deleteAppoint(appointId);
-      const allAppUser = await appoinService.getAppointments(ownerId);
+      const { appointId } = req.body;
+      const { refreshToken } = req.cookies;
+      await appoinService.deleteAppoint(refreshToken, appointId);
+      const allAppsUser = await appoinService.getAppointments(refreshToken);
 
-      return res.json(allAppUser);
-    } catch {
-      (err) => console.error(err);
+      return res.json(allAppsUser);
+    } catch (err) {
+      res.status(401).json({ data: "some error occured" });
+      console.error(err);
     }
   }
 }

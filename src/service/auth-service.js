@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const tokenService = require("./../service/token-service");
 const UserDto = require("../dtos/user-dtos");
 const ApiError = require("rest-api-errors");
-const res = require("express/lib/response");
 const HASH_ROUDS = 10;
 
 class AuthService {
@@ -53,7 +52,7 @@ class AuthService {
       throw new ApiError.UnauthorizedError();
     }
 
-    const persTok = await tokenService.validateRefreshToken(refreshToken);
+    const persTok = await tokenService.validateToken(refreshToken);
     const savedToken = await tokenService.findToken(refreshToken);
 
     if (!persTok || !savedToken) {
