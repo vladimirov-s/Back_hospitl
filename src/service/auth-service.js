@@ -52,7 +52,7 @@ class AuthService {
       throw new ApiError.UnauthorizedError();
     }
 
-    const persTok = await tokenService.validateToken(refreshToken);
+    const persTok = await tokenService.validateRefreshToken(refreshToken);
     const savedToken = await tokenService.findToken(refreshToken);
 
     if (!persTok || !savedToken) {

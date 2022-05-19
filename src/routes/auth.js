@@ -10,6 +10,6 @@ router.post("/createappointment", userController.createAppointment);
 router.delete("/deleteAppoint", userController.deleteAppoint);
 router.get("/appointments", userController.getAppoints);
 router.get("/refresh", userController.refresh);
-
+router.patch("/editAppointment", userController.editAppointment);
 
 module.exports = router;

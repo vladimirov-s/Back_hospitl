@@ -4,14 +4,14 @@ const tokenService = require("./../service/token-service");
 const ApiError = require("rest-api-errors");
 
 class AppointService {
-  async createappoint(refreshToken, customer, doctor, date, complaits) {
-    if (!refreshToken) {
-      throw new ApiError.UnauthorizedError("Рефреш токена нет");
+  async createappoint(accessToken, customer, doctor, date, complaits) {
+    if (!accessToken) {
+      throw new ApiError.UnauthorizedError("accessTokena нет");
     }
 
-    const personalTok = await tokenService.validateToken(refreshToken);
+    const personalTok = await tokenService.checkAcesToken(accessToken);
     if (!personalTok) {
-      throw new ApiError.UnauthorizedError("Решрештокен не прошел валидацию");
+      throw new ApiError.UnauthorizedError("accessToken дохленький");
     }
 
     const appoint = await appointModel.create({
@@ -24,29 +24,58 @@ class AppointService {
     return appoint;
   }
 
-  async getAppointments(refreshToken, secTask, next) {
-    if (!refreshToken) {
-      throw new ApiError.UnauthorizedError("Рефреш токена нет");
+  async editAppoint(
+    accessToken,
+    id,
+    customerName,
+    doctorname,
+    date,
+    complaint
+  ) {
+    if (!accessToken) {
+      throw new ApiError.UnauthorizedError("accessToken нет");
     }
 
-    const personalTok = await tokenService.validateToken(refreshToken);
+    const personalTok = await tokenService.checkAcesToken(accessToken);
+    if (!personalTok) {
+      throw new ApiError.UnauthorizedError("accessToken дохленький");
+    }
+
+    await appointModel.updateOne(
+      { _id: id },
+      {
+        $set: {
+          customerName: customerName,
+          doctorname: doctorname,
+          date: date,
+          complaint: complaint,
+        },
+      }
+    );
+    return;
+  }
+
+  async getAppointments(accessToken) {
+    if (!accessToken) {
+      throw new ApiError.UnauthorizedError("accessToken нет");
+    }
+
+    const personalTok = await tokenService.checkAcesToken(accessToken);
 
     if (!personalTok) {
-      throw new ApiError.UnauthorizedError("Решрештокен не прошел валидацию");
+      throw new ApiError.UnauthorizedError("accessToken дохленький");
     }
 
     const allAppoints = await appointModel.find({ user: personalTok.id });
-    // next(secTask);
     return allAppoints;
   }
 
-  async deleteAppoint(refreshToken, appointId) {
-    if (!refreshToken) {
+  async deleteAppoint(accessToken, appointId) {
+    if (!accessToken) {
       throw new ApiError.UnauthorizedError("Рефреш токена нет");
     }
 
-    const personalTok = await tokenService.validateToken(refreshToken);
-    console.log(personalTok);
+    const personalTok = await tokenService.checkAcesToken(accessToken);
     if (!personalTok) {
       throw new ApiError.UnauthorizedError("Решрештокен не прошел валидацию");
     }
