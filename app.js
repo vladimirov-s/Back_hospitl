@@ -5,8 +5,9 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const router = require("./src/routes/auth");
 const app = express();
-const corsOptions = require("./src/config");
-const port = process.env.PORT || 5000;
+const corsOptions = require("./src/config/config1");
+const alternativePort = require("./src/config/config2");
+const port = process.env.PORT || alternativePort;
 
 app.use(express.json());
 app.use(cookieParser());

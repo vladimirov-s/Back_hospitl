@@ -18,11 +18,16 @@ class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
-      return res.json(createNewUser);
+      res.cookie("accessToken", createNewUser.token.accessToken, {
+        maxAge: 60 * 60 * 1000,
+        httpOnly: true,
+      });
+
+      return res.json(createNewUser.user);
     } catch (err) {
       console.error(err);
       res.status(409).json({ data: "Такой пользователь уже существует" });
-      exit;
+      process.exit(1);
     }
   }
 
@@ -34,7 +39,12 @@ class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
-      return res.json(login);
+      res.cookie("accessToken", login.token.accessToken, {
+        maxAge: 60 * 60 * 1000,
+        httpOnly: true,
+      });
+
+      return res.json(login.user);
     } catch (err) {
       res.status(400).json({ data: "some error occured" });
     }
@@ -45,6 +55,7 @@ class UserController {
       const { refreshToken } = req.cookies;
       const token = await authService.logout(refreshToken);
       res.clearCookie("refreshToken");
+      res.clearCookie("accessToken");
       return res.json(token);
     } catch (err) {
       res.status(400).json({ data: "some error occured" });
@@ -53,6 +64,7 @@ class UserController {
   }
 
   async refresh(req, res, next) {
+    console.log(req.cookies);
     try {
       const { refreshToken } = req.cookies;
       const userData = await authService.refresh(refreshToken);
@@ -61,9 +73,15 @@ class UserController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
-      return res.json(userData);
+      res.cookie("accessToken", userData.token.accessToken, {
+        maxAge: 60 * 60 * 1000,
+        httpOnly: true,
+      });
+      return res.json(userData.user);
     } catch (err) {
-      res.status(401);
+      res.clearCookie("refreshToken");
+      res.clearCookie("accessToken");
+      res.status(401).send("не авторизован");
       console.error(err);
     }
   }
@@ -73,14 +91,9 @@ class UserController {
   async createAppointment(req, res) {
     try {
       const { customer, doctor, complaint, date } = req.body;
-      const accessToken = req.headers.authorization;
-      let accessTokenTrimed;
-      if (accessToken) {
-        accessTokenTrimed = accessToken.slice(7);
-      }
-
+      const accessToken = req.cookies.accessToken;
       const appoint = await appoinService.createappoint(
-        accessTokenTrimed,
+        accessToken,
         customer,
         doctor,
         date,
@@ -89,7 +102,7 @@ class UserController {
       const allAppUser = await appoinService.getAppointments(accessTokenTrimed);
       return res.json({ data: allAppUser });
     } catch (err) {
-      res.status(401);
+      res.status(401).send("не авторизован");
       console.error(err);
     }
   }
@@ -97,60 +110,45 @@ class UserController {
   async editAppointment(req, res) {
     try {
       const { id, customerName, doctorname, date, complaint } = req.body;
-      const accessToken = req.headers.authorization;
-      let accessTokenTrimed;
-      if (accessToken) {
-        accessTokenTrimed = accessToken.slice(7);
-      }
+      const accessToken = req.cookies.accessToken;
 
       const edited = appoinService.editAppoint(
-        accessTokenTrimed,
+        accessToken,
         id,
         customerName,
         doctorname,
         date,
         complaint
       );
-      const allAppoints = await appoinService.getAppointments(refreshToken);
+      const allAppoints = await appoinService.getAppointments(accessToken);
       res.json({ data: allAppoints });
     } catch (err) {
-      res.status(401);
+      res.status(401).send("не авторизован");
       console.error(err);
     }
   }
 
   async getAppoints(req, res) {
     try {
-      const accessToken = req.headers.authorization;
-      let accessTokenTrimed;
-      if (accessToken) {
-        accessTokenTrimed = accessToken.slice(7);
-      }
-      const appointments = await appoinService.getAppointments(
-        accessTokenTrimed
-      );
+      const accessToken = req.cookies.accessToken;
+      const appointments = await appoinService.getAppointments(accessToken);
       res.json({ data: appointments });
     } catch (err) {
-      res.status(401);
+      res.status(401).send("не авторизован");
       console.error(err);
     }
   }
   async deleteAppoint(req, res) {
     try {
       const { appointId } = req.body;
-      const accessToken = req.headers.authorization;
-      let accessTokenTrimed;
-      if (accessToken) {
-        accessTokenTrimed = accessToken.slice(7);
-      }
-      await appoinService.deleteAppoint(accessTokenTrimed, appointId);
-      const allAppsUser = await appoinService.getAppointments(
-        accessTokenTrimed
-      );
+      const accessToken = req.cookies.accessToken;
+
+      await appoinService.deleteAppoint(accessToken, appointId);
+      const allAppsUser = await appoinService.getAppointments(accessToken);
 
       return res.json(allAppsUser);
     } catch (err) {
-      res.status(401);
+      res.status(401).send("не авторизован");
       console.error(err);
     }
   }
