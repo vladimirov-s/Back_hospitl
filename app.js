@@ -4,23 +4,24 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const router = require("./src/routes/auth");
+const router2 = require("./src/routes/appointments");
 const app = express();
-const corsOptions = require("./src/config/config1");
-const alternativePort = require("./src/config/config2");
-const port = process.env.PORT || alternativePort;
+const config = require("./src/config/config");
+const PORT = config.port || 5000;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors(corsOptions));
-app.use("/api", router);
+app.use(cors(config.corsOptions));
+app.use("/auth", router);
+app.use("/", router2);
 
 const start = async () => {
   try {
-    mongoose.connect(process.env.URL, {
+    mongoose.connect(config.urlDB, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    app.listen(port, () => console.log(`listen port-${port}`));
+    app.listen(PORT, () => console.log(`listen port-${PORT}`));
   } catch (err) {
     console.error(err);
     process.exit(1);

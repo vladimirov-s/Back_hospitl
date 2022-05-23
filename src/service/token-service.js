@@ -1,16 +1,13 @@
 const jwt = require("jsonwebtoken");
 const tokenModel = require("../models/token");
+const config = require("../config/config");
 
 class TokenService {
   generateTokens(payload) {
-    const accessToken = jwt.sign(
-      payload, 
-      `${process.env.JWT_ACCESS_SECRET}`, {
+    const accessToken = jwt.sign(payload, `${config.jwtAcces}`, {
       expiresIn: "1h",
     });
-    const refreshToken = jwt.sign(
-      payload, 
-      `${process.env.JWT_REFRES_SECRET}`, {
+    const refreshToken = jwt.sign(payload, `${config.jwtRefresh}`, {
       expiresIn: "30d",
     });
     return {
@@ -34,7 +31,7 @@ class TokenService {
 
   checkAcesToken(accessToken) {
     try {
-      const ckecked = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET);
+      const ckecked = jwt.verify(accessToken, config.jwtAcces);
       return ckecked;
     } catch (e) {
       return null;
@@ -43,7 +40,7 @@ class TokenService {
 
   validateRefreshToken(refreshToken) {
     try {
-      const verified = jwt.verify(refreshToken, process.env.JWT_REFRES_SECRET);
+      const verified = jwt.verify(refreshToken, config.jwtRefresh);
 
       return verified;
     } catch (e) {
