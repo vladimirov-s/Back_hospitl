@@ -3,8 +3,14 @@ const authService = require("./../service/auth-service");
 const appoinService = require("./../service/appoint-sevice");
 const { validationResult } = require("express-validator");
 
-const acesTokParams = { maxAge: 60 * 60 * 1000, httpOnly: true };
-const refTokParams = { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true };
+const acesTokParams = {
+  maxAge: 60 * 60 * 1000,
+  httpOnly: true,
+};
+const refTokParams = {
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  httpOnly: true,
+};
 
 class UserController {
   async registration(req, res) {
@@ -17,7 +23,11 @@ class UserController {
 
       const { name, password } = req.body;
       const createNewUser = await authService.registration(name, password);
-      res.cookie("refreshToken", createNewUser.token.refreshToken, refTokParams);
+      res.cookie(
+        "refreshToken",
+        createNewUser.token.refreshToken,
+        refTokParams
+      );
       res.cookie("accessToken", createNewUser.token.accessToken, acesTokParams);
 
       return res.json(createNewUser.user);
