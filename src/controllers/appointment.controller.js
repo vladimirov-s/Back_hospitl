@@ -22,12 +22,11 @@ class AppointmentController {
 
   async editAppointment(req, res) {
     try {
-      const { id, customerName, doctorname, date, complaint } = req.body.data;
+      const { id, customerName, doctorname, date, complaint } = req.body;
 
       const accessToken = req.cookies.accessToken;
 
-      console.log(customerName);
-      const edited = appoinService.editAppoint(
+      const edited = await appoinService.editAppoint(
         accessToken,
         id,
         customerName,
