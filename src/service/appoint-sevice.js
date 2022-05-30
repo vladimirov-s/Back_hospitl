@@ -40,7 +40,7 @@ class AppointService {
       throw new ApiError.UnauthorizedError("accessToken дохленький");
     }
 
-    await appointModel.updateOne(
+    const edited = await appointModel.findOneAndUpdate(
       { _id: id },
       {
         $set: {
@@ -51,7 +51,7 @@ class AppointService {
         },
       }
     );
-    return;
+    return edited;
   }
 
   async getAppointments(accessToken) {

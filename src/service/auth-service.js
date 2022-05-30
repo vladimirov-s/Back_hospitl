@@ -22,7 +22,7 @@ class AuthService {
     const userDto = new UserDto(user);
     const token = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, token.refreshToken);
-    return { "token": token, "user": userDto };
+    return { token: token, user: userDto };
   }
 
   async login(name, password) {
