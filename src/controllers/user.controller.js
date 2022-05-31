@@ -3,9 +3,14 @@ const authService = require("./../service/auth-service");
 const appoinService = require("./../service/appoint-sevice");
 const { validationResult } = require("express-validator");
 
-const acesTokParams = { maxAge: 60 * 60 * 1000, httpOnly: true };
-const refTokParams = { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true };
-
+const acesTokenParameters = {
+  maxAge: 60 * 60 * 1000,
+  httpOnly: true,
+};
+const refreshTokenParameters = {
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+  httpOnly: true,
+};
 class UserController {
   async registration(req, res) {
     try {
@@ -20,9 +25,13 @@ class UserController {
       res.cookie(
         "refreshToken",
         createNewUser.token.refreshToken,
-        refTokParams
+        refreshTokenParameters
       );
-      res.cookie("accessToken", createNewUser.token.accessToken, acesTokParams);
+      res.cookie(
+        createNewUser.token.accessToken,
+        acesTokenParameters,
+        "accessToken"
+      );
 
       return res.json(createNewUser.user);
     } catch (err) {
@@ -40,8 +49,16 @@ class UserController {
       }
 
       const login = await authService.login(name, password);
-      res.cookie("refreshToken", login.token.refreshToken, refTokParams);
-      res.cookie("accessToken", login.token.accessToken, acesTokParams);
+      res.cookie(
+        "refreshToken",
+        login.token.refreshToken,
+        refreshTokenParameters
+      );
+      res.cookie(
+        "accessToken", 
+        login.token.accessToken, 
+         acesTokenParameters
+      );
 
       return res.json(login.user);
     } catch (err) {
@@ -78,8 +95,16 @@ class UserController {
 
       const userData = await authService.refresh(refreshToken);
 
-      res.cookie("refreshToken", userData.token.refreshToken, refTokParams);
-      res.cookie("accessToken", userData.token.accessToken, acesTokParams);
+      res.cookie(
+        "refreshToken",
+        userData.token.refreshToken,
+        refreshTokenParameters
+      );
+      res.cookie(
+        "accessToken",
+        userData.token.accessToken,
+        acesTokenParameters
+      );
       return res.json(userData.user);
     } catch (err) {
       res.clearCookie("refreshToken");

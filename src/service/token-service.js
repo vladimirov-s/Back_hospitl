@@ -41,7 +41,6 @@ class TokenService {
   validateRefreshToken(refreshToken) {
     try {
       const verified = jwt.verify(refreshToken, config.jwtRefresh);
-
       return verified;
     } catch (e) {
       return null;
