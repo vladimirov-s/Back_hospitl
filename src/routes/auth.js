@@ -4,7 +4,7 @@ const router = new Router();
 const authSchema = require("../middlewares/auth-schema");
 
 router.post("/registration", authSchema, userController.registration);
-router.post("/login", userController.login);
+router.post("/login", authSchema, userController.login);
 router.get("/logout", userController.logout);
 router.get("/refresh", userController.refresh);
 

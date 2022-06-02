@@ -1,6 +1,5 @@
 const User = require("../models/user");
-const authService = require("./../service/auth-service");
-const appoinService = require("./../service/appoint-sevice");
+const AuthService = require("./../service/auth-service");
 const { validationResult } = require("express-validator");
 
 const acesTokenParameters = {
@@ -17,11 +16,12 @@ class UserController {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
+        console.error(errors);
         return res.status(400).send("some error occured");
       }
 
       const { name, password } = req.body;
-      const createNewUser = await authService.registration(name, password);
+      const createNewUser = await AuthService.registration(name, password);
       res.cookie(
         "refreshToken",
         createNewUser.token.refreshToken,
@@ -43,22 +43,20 @@ class UserController {
   async login(req, res) {
     try {
       const { name, password } = req.body;
+      const errors = validationResult(req);
 
-      if (!name || !password) {
+      if (!errors.isEmpty()) {
+        console.error(errors);
         return res.status(400).send("some error occured");
       }
 
-      const login = await authService.login(name, password);
+      const login = await AuthService.login(name, password);
       res.cookie(
         "refreshToken",
         login.token.refreshToken,
         refreshTokenParameters
       );
-      res.cookie(
-        "accessToken", 
-        login.token.accessToken, 
-         acesTokenParameters
-      );
+      res.cookie("accessToken", login.token.accessToken, acesTokenParameters);
 
       return res.json(login.user);
     } catch (err) {
@@ -75,7 +73,7 @@ class UserController {
         return res.status(400).send("some error occured");
       }
 
-      const token = await authService.logout(refreshToken);
+      const token = await AuthService.logout(refreshToken);
       res.clearCookie("refreshToken");
       res.clearCookie("accessToken");
       return res.json(token);
@@ -93,7 +91,7 @@ class UserController {
         return res.status(400).send("some error occured");
       }
 
-      const userData = await authService.refresh(refreshToken);
+      const userData = await AuthService.refresh(refreshToken);
 
       res.cookie(
         "refreshToken",

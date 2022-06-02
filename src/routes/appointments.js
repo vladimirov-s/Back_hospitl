@@ -1,10 +1,24 @@
 const Router = require("express").Router;
 const router = new Router();
 const appointmentController = require("../controllers/appointment.controller");
+const appointmentShema = require("../middlewares/appointment-shema");
+const appointDelete = require("../middlewares/appointment_delete_schema");
 
-router.post("/createappointment", appointmentController.createAppointment);
-router.delete("/deleteAppoint", appointmentController.deleteAppoint);
+router.post(
+  "/createappointment",
+  appointmentShema,
+  appointmentController.createAppointment
+);
+router.patch(
+  "/editAppointment",
+  appointmentShema,
+  appointmentController.editAppointment
+);
+router.delete(
+  "/deleteAppoint",
+  appointDelete,
+  appointmentController.deleteAppoint
+);
 router.get("/appointments", appointmentController.getAppoints);
-router.patch("/editAppointment", appointmentController.editAppointment);
 
 module.exports = router;

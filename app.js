@@ -2,17 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-const auth = require("./src/routes/auth");
-const appointments = require("./src/routes/appointments");
 const app = express();
+const index = require("./src/routes/index");
 const config = require("./src/config/config");
 const PORT = config.port || 5000;
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(config.corsOptions));
-app.use("/auth", auth);
-app.use("/", appointments);
+app.use(index);
 
 const start = () => {
   try {

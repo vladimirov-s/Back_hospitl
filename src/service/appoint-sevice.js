@@ -1,5 +1,5 @@
 const appointModel = require("./../models/appointment");
-const tokenService = require("./../service/token-service");
+const TokenService = require("./../service/token-service");
 const ApiError = require("rest-api-errors");
 
 class AppointService {
@@ -8,7 +8,7 @@ class AppointService {
       throw new ApiError.UnauthorizedError("accessTokena нет");
     }
 
-    const personalTok = await tokenService.checkAcesToken(accessToken);
+    const personalTok = await TokenService.checkAcesToken(accessToken);
     if (!personalTok) {
       throw new ApiError.UnauthorizedError("accessToken дохленький");
     }
@@ -16,7 +16,7 @@ class AppointService {
     const appoint = await appointModel.create({
       user: personalTok.id,
       customerName: customer,
-      doctorname: doctor,
+      doctorName: doctor,
       date: date,
       complaint: complaits,
     });
@@ -27,7 +27,7 @@ class AppointService {
     accessToken,
     id,
     customerName,
-    doctorname,
+    doctorName,
     date,
     complaint
   ) {
@@ -35,7 +35,7 @@ class AppointService {
       throw new ApiError.UnauthorizedError("accessToken нет");
     }
 
-    const personalTok = await tokenService.checkAcesToken(accessToken);
+    const personalTok = await TokenService.checkAcesToken(accessToken);
     if (!personalTok) {
       throw new ApiError.UnauthorizedError("accessToken дохленький");
     }
@@ -45,7 +45,7 @@ class AppointService {
       {
         $set: {
           customerName: customerName,
-          doctorname: doctorname,
+          doctorName: doctorName,
           date: date,
           complaint: complaint,
         },
@@ -59,7 +59,7 @@ class AppointService {
       throw new ApiError.UnauthorizedError("accessToken нет");
     }
 
-    const personalTok = await tokenService.checkAcesToken(accessToken);
+    const personalTok = await TokenService.checkAcesToken(accessToken);
 
     if (!personalTok) {
       throw new ApiError.UnauthorizedError("accessToken дохленький");
@@ -74,7 +74,7 @@ class AppointService {
       throw new ApiError.UnauthorizedError("Рефреш токена нет");
     }
 
-    const personalTok = await tokenService.checkAcesToken(accessToken);
+    const personalTok = await TokenService.checkAcesToken(accessToken);
     if (!personalTok) {
       throw new ApiError.UnauthorizedError("Решрештокен не прошел валидацию");
     }

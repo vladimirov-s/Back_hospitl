@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
-const tokenService = require("./../service/token-service");
+const TokenService = require("./../service/token-service");
 const UserDto = require("../dtos/user-dtos");
 const ApiError = require("rest-api-errors");
 const HASH_ROUDS = 10;
@@ -20,8 +20,8 @@ class AuthService {
     });
 
     const userDto = new UserDto(user);
-    const token = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(userDto.id, token.refreshToken);
+    const token = TokenService.generateTokens({ ...userDto });
+    await TokenService.saveToken(userDto.id, token.refreshToken);
     return { token: token, user: userDto };
   }
 
@@ -37,13 +37,13 @@ class AuthService {
       throw ApiError.BadRequestError(`Password is wrong`);
     }
     const userDto = new UserDto(user);
-    const token = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(userDto.id, token.refreshToken);
+    const token = TokenService.generateTokens({ ...userDto });
+    await TokenService.saveToken(userDto.id, token.refreshToken);
     return { token: token, user: userDto };
   }
 
   async logout(refreshToken) {
-    const token = await tokenService.removetoken(refreshToken);
+    const token = await TokenService.removetoken(refreshToken);
     return token;
   }
 
@@ -52,8 +52,8 @@ class AuthService {
       throw new ApiError.UnauthorizedError();
     }
 
-    const persTok = await tokenService.validateRefreshToken(refreshToken);
-    const savedToken = await tokenService.findToken(refreshToken);
+    const persTok = await TokenService.validateRefreshToken(refreshToken);
+    const savedToken = await TokenService.findToken(refreshToken);
 
     if (!persTok || !savedToken) {
       throw new ApiError.UnauthorizedError();
@@ -61,8 +61,8 @@ class AuthService {
 
     const user = await User.findById(persTok.id);
     const userDto = new UserDto(user);
-    const token = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(userDto.id, token.refreshToken);
+    const token = TokenService.generateTokens({ ...userDto });
+    await TokenService.saveToken(userDto.id, token.refreshToken);
 
     return { token: token, user: userDto };
   }
