@@ -1,11 +1,11 @@
 const Router = require("express").Router;
-const userController = require("../controllers/user.controller");
-const router = new Router();
+const UserController = require("../controllers/user.controller");
+const RRouter = new Router();
 const authSchema = require("../middlewares/auth-schema");
 
-router.post("/registration", authSchema, userController.registration);
-router.post("/login", authSchema, userController.login);
-router.get("/logout", userController.logout);
-router.get("/refresh", userController.refresh);
+RRouter.post("/registration", authSchema, UserController.registration);
+RRouter.post("/login", authSchema, UserController.login);
+RRouter.get("/logout", UserController.logout);
+RRouter.get("/refresh", UserController.refresh);
 
-module.exports = router;
+module.exports = RRouter;
