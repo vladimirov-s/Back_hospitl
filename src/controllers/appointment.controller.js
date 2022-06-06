@@ -1,4 +1,4 @@
-const AppoinService = require("./../service/appoint-sevice");
+const AppointmentService = require("./../service/appoint-sevice");
 const { validationResult } = require("express-validator");
 
 class AppointmentController {
@@ -13,7 +13,7 @@ class AppointmentController {
         return res.status(400).send("some error occured");
       }
 
-      const appoint = await AppoinService.createappoint(
+      const appoint = await AppointmentService.createappoint(
         accessToken,
         customer,
         doctor,
@@ -38,7 +38,7 @@ class AppointmentController {
         return res.status(400).send("some error occured");
       }
 
-      const edited = await AppoinService.editAppoint(
+      const edited = await AppointmentService.editAppoint(
         accessToken,
         id,
         customer,
@@ -61,7 +61,7 @@ class AppointmentController {
         return res.status(400).send("some error occured");
       }
 
-      const appointments = await AppoinService.getAppointments(accessToken);
+      const appointments = await AppointmentService.getAppointments(accessToken);
       res.json({ data: appointments });
     } catch (err) {
       res.status(400).send("Something went wrong");
@@ -72,15 +72,14 @@ class AppointmentController {
     try {
       const appointId = req.body.appointId;
       const accessToken = req.cookies.accessToken;
-      const errors = validationResult(req);
 
-      if (!accessToken || !errors.isEmpty()) {
+      if (!accessToken) {
         console.error(errors);
         return res.status(400).send("some error occured");
       }
 
-      await AppoinService.deleteAppoint(accessToken, appointId);
-      const allAppsUser = await AppoinService.getAppointments(accessToken);
+      await AppointmentService.deleteAppoint(accessToken, appointId);
+      const allAppsUser = await AppointmentService.getAppointments(accessToken);
 
       return res.json({ data: allAppsUser });
     } catch (err) {
