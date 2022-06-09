@@ -10,3 +10,6 @@ npm-debug.log*
 .ionide/
 .env
 config.js
+
+#Dotenv data
+.env
