@@ -13,13 +13,6 @@ const refreshTokenParameters = {
 class UserController {
   async registration(req, res) {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        console.error(errors);
-        return res.status(400).send("some error occured");
-      }
-
       const { name, password } = req.body;
       const createNewUser = await AuthService.registration(name, password);
       res.cookie(
@@ -32,7 +25,6 @@ class UserController {
         acesTokenParameters,
         "accessToken"
       );
-
       return res.json(createNewUser.user);
     } catch (err) {
       console.error(err);
@@ -43,13 +35,6 @@ class UserController {
   async login(req, res) {
     try {
       const { name, password } = req.body;
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        console.error(errors);
-        return res.status(400).send("some error occured");
-      }
-
       const login = await AuthService.login(name, password);
       res.cookie(
         "refreshToken",
@@ -68,11 +53,6 @@ class UserController {
   async logout(req, res) {
     try {
       const refreshToken = req.cookies.refreshToken;
-
-      if (!refreshToken) {
-        return res.status(400).send("some error occured");
-      }
-
       const token = await AuthService.logout(refreshToken);
       res.clearCookie("refreshToken");
       res.clearCookie("accessToken");
@@ -86,11 +66,6 @@ class UserController {
   async refresh(req, res, next) {
     try {
       const refreshToken = req.cookies.refreshToken;
-
-      if (!refreshToken) {
-        return res.status(400).send("some error occured");
-      }
-
       const userData = await AuthService.refresh(refreshToken);
 
       res.cookie(

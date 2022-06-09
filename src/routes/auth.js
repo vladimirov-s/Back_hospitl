@@ -1,11 +1,17 @@
-const Router = require("express").Router;
+const Express = require("express").Router;
 const UserController = require("../controllers/user.controller");
-const RRouter = new Router();
+const Router = new Express();
 const authSchema = require("../middlewares/auth-schema");
+const final_check = require("../middlewares/final-check");
 
-RRouter.post("/registration", authSchema, UserController.registration);
-RRouter.post("/login", authSchema, UserController.login);
-RRouter.get("/logout", UserController.logout);
-RRouter.get("/refresh", UserController.refresh);
+Router.post(
+  "/registration",
+  authSchema,
+  final_check,
+  UserController.registration
+);
+Router.post("/login", authSchema, final_check, UserController.login);
+Router.get("/logout", UserController.logout);
+Router.get("/refresh", UserController.refresh);
 
-module.exports = RRouter;
+module.exports = Router;

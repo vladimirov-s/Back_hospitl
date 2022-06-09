@@ -1,18 +1,10 @@
-const AppointmentService = require("./../service/appoint-sevice");
-const { validationResult } = require("express-validator");
+const AppointmentService = require("../service/appointment-sevice");
 
 class AppointmentController {
   async createAppointment(req, res) {
     try {
       const { customer, doctor, complaint, date } = req.body;
       const accessToken = req.cookies.accessToken;
-      const errors = validationResult(req);
-
-      if (!accessToken || !errors.isEmpty()) {
-        console.error(errors);
-        return res.status(400).send("some error occured");
-      }
-
       const appoint = await AppointmentService.createappoint(
         accessToken,
         customer,
@@ -31,13 +23,6 @@ class AppointmentController {
     try {
       const { id, customer, doctor, date, complaint } = req.body;
       const accessToken = req.cookies.accessToken;
-      const errors = validationResult(req);
-
-      if (!accessToken || !errors.isEmpty()) {
-        console.error(errors);
-        return res.status(400).send("some error occured");
-      }
-
       const edited = await AppointmentService.editAppoint(
         accessToken,
         id,
@@ -46,42 +31,34 @@ class AppointmentController {
         date,
         complaint
       );
-      res.json({ data: edited });
+      return res.json({ data: edited });
     } catch (err) {
       res.status(400).send("Something went wrong");
       console.error(err);
     }
   }
 
-  async getAppoints(req, res) {
+  async getAppointments(req, res) {
     try {
       const accessToken = req.cookies.accessToken;
-
-      if (!accessToken) {
-        return res.status(400).send("some error occured");
-      }
-
-      const appointments = await AppointmentService.getAppointments(accessToken);
-      res.json({ data: appointments });
+      const appointments = await AppointmentService.getAppointments(
+        accessToken
+      );
+      return res.json({ data: appointments });
     } catch (err) {
       res.status(400).send("Something went wrong");
       console.error(err);
     }
   }
-  async deleteAppoint(req, res) {
+  async deleteAppointments(req, res) {
     try {
-      const appointId = req.body.appointId;
+      const appointmentId = req.body.appointId;
       const accessToken = req.cookies.accessToken;
-
-      if (!accessToken) {
-        console.error(errors);
-        return res.status(400).send("some error occured");
-      }
-
-      await AppointmentService.deleteAppoint(accessToken, appointId);
-      const allAppsUser = await AppointmentService.getAppointments(accessToken);
-
-      return res.json({ data: allAppsUser });
+      await AppointmentService.deleteAppoint(accessToken, appointmentId);
+      const allAppointmentsOfTheUser = await AppointmentService.getAppointments(
+        accessToken
+      );
+      return res.json({ data: allAppointmentsOfTheUser });
     } catch (err) {
       res.status(400).send("Something went wrong");
       console.error(err);

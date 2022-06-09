@@ -1,5 +1,5 @@
-const appointModel = require("./../models/appointment");
-const TokenService = require("./../service/token-service");
+const appointModel = require("../models/appointment");
+const TokenService = require("./token-service");
 const ApiError = require("rest-api-errors");
 
 class AppointService {

@@ -52,19 +52,19 @@ class AuthService {
       throw new ApiError.UnauthorizedError();
     }
 
-    const persTok = await TokenService.validateRefreshToken(refreshToken);
+    const personalToken = await TokenService.validateRefreshToken(refreshToken);
     const savedToken = await TokenService.findToken(refreshToken);
 
     if (!persTok || !savedToken) {
       throw new ApiError.UnauthorizedError();
     }
 
-    const user = await User.findById(persTok.id);
+    const user = await User.findById(personalToken.id);
     const userDto = new UserDto(user);
-    const token = TokenService.generateTokens({ ...userDto });
+    const tokens = TokenService.generateTokens({ ...userDto });
     await TokenService.saveToken(userDto.id, token.refreshToken);
 
-    return { token: token, user: userDto };
+    return { token: tokens, user: userDto };
   }
 }
 
