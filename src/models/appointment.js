@@ -8,4 +8,4 @@ const AppointmentSchema = new Schema({
   complaint: String,
 });
 
-module.exports = model("Appoints", AppointmentSchema);
+module.exports = model("Appointments", AppointmentSchema);

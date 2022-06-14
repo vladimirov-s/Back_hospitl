@@ -5,14 +5,14 @@ class AppointmentController {
     try {
       const { customer, doctor, complaint, date } = req.body;
       const accessToken = req.cookies.accessToken;
-      const appoint = await AppointmentService.createappoint(
+      const appointment = await AppointmentService.createappoint(
         accessToken,
         customer,
         doctor,
         date,
         complaint
       );
-      return res.json({ data: appoint });
+      return res.json({ data: appointment });
     } catch (err) {
       res.status(400).send("Something went wrong");
       console.error(err);
