@@ -23,7 +23,7 @@ class AppointmentController {
     try {
       const { id, customer, doctor, date, complaint } = req.body;
       const accessToken = req.cookies.accessToken;
-      const edited = await AppointmentService.editAppoint(
+      const edited = await AppointmentService.editAppointment(
         accessToken,
         id,
         customer,

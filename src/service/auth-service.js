@@ -55,7 +55,7 @@ class AuthService {
     const personalToken = await TokenService.validateRefreshToken(refreshToken);
     const savedToken = await TokenService.findToken(refreshToken);
 
-    if (!persTok || !savedToken) {
+    if (!personalToken || !savedToken) {
       throw new ApiError.UnauthorizedError();
     }
 
