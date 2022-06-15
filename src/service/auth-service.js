@@ -29,12 +29,12 @@ class AuthService {
     const user = await User.findOne({ name });
 
     if (!user) {
-      throw ApiError.BadRequestError(`User ${name} did't find`);
+      throw new ApiError.BadRequestError(`User ${name} did't find`);
     }
 
     const validPassword = bcrypt.compareSync(password, user.password);
     if (!validPassword) {
-      throw ApiError.BadRequestError(`Password is wrong`);
+      throw new ApiError.BadRequestError(`Password is wrong`);
     }
     const userDto = new UserDto(user);
     const token = TokenService.generateTokens({ ...userDto });
