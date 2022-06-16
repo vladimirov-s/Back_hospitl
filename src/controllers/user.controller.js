@@ -21,9 +21,9 @@ class UserController {
         refreshTokenParameters
       );
       res.cookie(
+        "accessToken",
         createNewUser.token.accessToken,
-        acesTokenParameters,
-        "accessToken"
+        acesTokenParameters
       );
       return res.json(createNewUser.user);
     } catch (err) {
